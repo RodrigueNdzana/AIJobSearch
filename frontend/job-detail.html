@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job details — AI Jobline</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<header id="site-header" class="site-header"></header>
+
+<main class="container-narrow">
+  <div id="job-content"><p class="spinner-text">Loading…</p></div>
+</main>
+
+<script src="js/api.js"></script>
+<script src="js/header.js"></script>
+<script>
+  renderHeader("browse");
+
+  const params = new URLSearchParams(window.location.search);
+  const jobId = params.get("id");
+  const contentEl = document.getElementById("job-content");
+
+  async function loadJob() {
+    if (!jobId) {
+      contentEl.innerHTML = `<div class="alert alert-error">No job specified.</div>`;
+      return;
+    }
+    try {
+      const job = await Api.get(`/api/jobs/${jobId}`);
+      renderJob(job);
+    } catch (err) {
+      contentEl.innerHTML = `<div class="alert alert-error">${escapeHtml(err.message)}</div>`;
+    }
+  }
+
+  function renderJob(job) {
+    const salary = formatSalary(job.salary_min, job.salary_max, job.currency);
+    contentEl.innerHTML = `
+      <span class="pill pill-${job.status}">${job.status}</span>
+      <h1 style="margin-top:12px;">${escapeHtml(job.title)}</h1>
+      <div class="job-meta" style="margin-bottom:20px;">
+        <span>${escapeHtml(job.location || (job.is_remote ? "Remote" : ""))}</span>
+        <span>${jobTypeLabel(job.job_type)}</span>
+        ${salary ? `<span>${salary}</span>` : ""}
+        ${job.experience_level ? `<span>${escapeHtml(job.experience_level)}</span>` : ""}
+      </div>
+
+      <div class="card">
+        <h3>Description</h3>
+        <p style="white-space:pre-wrap;">${escapeHtml(job.description)}</p>
+      </div>
+
+      <div id="apply-section"></div>
+    `;
+    renderApplySection(job);
+  }
+
+  function renderApplySection(job) {
+    const el = document.getElementById("apply-section");
+
+    if (!Api.isLoggedIn()) {
+      el.innerHTML = `
+        <div class="card text-center">
+          <p>Log in as a job seeker to apply for this role.</p>
+          <a href="login.html" class="btn btn-primary">Log in to apply</a>
+        </div>`;
+      return;
+    }
+
+    if (Api.role() !== "job_seeker") {
+      el.innerHTML = `<div class="card"><p class="muted">Only job seeker accounts can apply to jobs.</p></div>`;
+      return;
+    }
+
+    el.innerHTML = `
+      <div class="card">
+        <h3>Apply for this role</h3>
+        <div id="apply-alert"></div>
+        <div class="flex-between">
+          <label for="cover-letter" style="margin:18px 0 6px;">Cover letter (optional)</label>
+          <button type="button" class="btn btn-secondary" id="draft-letter-btn" style="padding:4px 12px; font-size:0.82rem;">✨ Draft with AI</button>
+        </div>
+        <textarea id="cover-letter" placeholder="A few sentences on why you're a fit…"></textarea>
+        <button class="btn btn-primary" id="apply-btn" style="margin-top:16px;">Submit application</button>
+      </div>
+    `;
+
+    document.getElementById("draft-letter-btn").addEventListener("click", async () => {
+      const btn = document.getElementById("draft-letter-btn");
+      const alertBox = document.getElementById("apply-alert");
+      btn.disabled = true;
+      btn.textContent = "Drafting…";
+      try {
+        const result = await Api.post("/api/applications/draft-cover-letter", { job_id: job.id });
+        document.getElementById("cover-letter").value = result.cover_letter;
+      } catch (err) {
+        alertBox.innerHTML = `<div class="alert alert-error">${escapeHtml(err.message)}</div>`;
+      }
+      btn.disabled = false;
+      btn.textContent = "✨ Draft with AI";
+    });
+
+    document.getElementById("apply-btn").addEventListener("click", async () => {
+      const btn = document.getElementById("apply-btn");
+      const alertBox = document.getElementById("apply-alert");
+      btn.disabled = true;
+      btn.textContent = "Submitting…";
+      try {
+        const coverLetter = document.getElementById("cover-letter").value.trim();
+        await Api.post("/api/applications", {
+          job_id: job.id,
+          cover_letter: coverLetter || null,
+        });
+        alertBox.innerHTML = `<div class="alert alert-success">Application submitted. You can track its status from your dashboard.</div>`;
+        btn.textContent = "Applied";
+      } catch (err) {
+        alertBox.innerHTML = `<div class="alert alert-error">${escapeHtml(err.message)}</div>`;
+        btn.disabled = false;
+        btn.textContent = "Submit application";
+      }
+    });
+  }
+
+  loadJob();
+</script>
+</body>
+</html>

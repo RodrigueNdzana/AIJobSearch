@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My dashboard — AI Jobline</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<header id="site-header" class="site-header"></header>
+
+<main class="container">
+  <h1>My dashboard</h1>
+
+  <div class="tab-row">
+    <button class="tab-btn active" data-tab="recommendations">Recommended for you</button>
+    <button class="tab-btn" data-tab="assistant">AI Assistant</button>
+    <button class="tab-btn" data-tab="applications">My applications</button>
+    <button class="tab-btn" data-tab="profile">Profile</button>
+    <button class="tab-btn" data-tab="cvs">CVs</button>
+    <button class="tab-btn" data-tab="notifications">Notifications</button>
+  </div>
+
+  <section id="tab-recommendations"><p class="spinner-text">Loading…</p></section>
+  <section id="tab-assistant" style="display:none;"></section>
+  <section id="tab-applications" style="display:none;"></section>
+  <section id="tab-profile" style="display:none;"></section>
+  <section id="tab-cvs" style="display:none;"></section>
+  <section id="tab-notifications" style="display:none;"></section>
+</main>
+
+<script src="js/api.js"></script>
+<script src="js/header.js"></script>
+<script src="js/seeker-dashboard.js"></script>
+</body>
+</html>

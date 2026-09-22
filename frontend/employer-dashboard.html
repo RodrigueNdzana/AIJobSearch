@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Employer dashboard — AI Jobline</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<header id="site-header" class="site-header"></header>
+
+<main class="container">
+  <h1>Employer dashboard</h1>
+
+  <div class="tab-row">
+    <button class="tab-btn active" data-tab="jobs">My job postings</button>
+    <button class="tab-btn" data-tab="post">Post a job</button>
+    <button class="tab-btn" data-tab="company">Company profile</button>
+    <button class="tab-btn" data-tab="notifications">Notifications</button>
+  </div>
+
+  <section id="tab-jobs"><p class="spinner-text">Loading…</p></section>
+  <section id="tab-post" style="display:none;"></section>
+  <section id="tab-company" style="display:none;"></section>
+  <section id="tab-notifications" style="display:none;"></section>
+
+  <div id="applicants-modal" style="display:none; position:fixed; inset:0; background:rgba(27,36,48,0.5); z-index:50;">
+    <div style="max-width:760px; margin:60px auto; background:var(--paper-raised); border-radius:3px; padding:28px; max-height:80vh; overflow-y:auto;">
+      <div class="flex-between">
+        <h2 id="applicants-title" class="mt-0">Applicants</h2>
+        <button class="btn btn-secondary" id="close-modal-btn">Close</button>
+      </div>
+      <div id="applicants-content"></div>
+    </div>
+  </div>
+</main>
+
+<script src="js/api.js"></script>
+<script src="js/header.js"></script>
+<script src="js/employer-dashboard.js"></script>
+</body>
+</html>

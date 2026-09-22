@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Jobline — Find your next role</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<header id="site-header" class="site-header"></header>
+
+<main class="container">
+  <div style="max-width: 680px; margin-bottom: 32px;">
+    <span class="eyebrow">Jobs · matched by meaning, not just keywords</span>
+    <h1>Find work that actually fits</h1>
+    <p>Search in plain language , for example : "remote backend role using Python" works as well as a job title". Matching runs on semantic embeddings under the hood.</p>
+  </div>
+
+  <div class="search-bar">
+    <input type="text" id="search-input" placeholder="Try: senior data engineer with AWS experience, hybrid in Berlin">
+    <button class="btn btn-primary" id="search-btn">Search</button>
+  </div>
+
+  <div class="filters-row">
+    <select id="filter-type">
+      <option value="">Any job type</option>
+      <option value="full_time">Full-time</option>
+      <option value="part_time">Part-time</option>
+      <option value="contract">Contract</option>
+      <option value="internship">Internship</option>
+      <option value="freelance">Freelance</option>
+    </select>
+    <select id="filter-remote">
+      <option value="">Remote or on-site</option>
+      <option value="true">Remote only</option>
+      <option value="false">On-site only</option>
+    </select>
+    <input type="text" id="filter-location" placeholder="Location" style="max-width:180px;">
+    <input type="number" id="filter-salary" placeholder="Min salary" style="max-width:140px;">
+  </div>
+
+  <div id="results" class="stack">
+    <p class="spinner-text">Loading jobs…</p>
+  </div>
+</main>
+
+<script src="js/api.js"></script>
+<script src="js/header.js"></script>
+<script>
+  renderHeader("browse");
+
+  const resultsEl = document.getElementById("results");
+
+  async function runSearch() {
+    resultsEl.innerHTML = `<p class="spinner-text">Searching…</p>`;
+
+    const query = document.getElementById("search-input").value.trim();
+    const jobType = document.getElementById("filter-type").value;
+    const remote = document.getElementById("filter-remote").value;
+    const location = document.getElementById("filter-location").value.trim();
+    const minSalary = document.getElementById("filter-salary").value;
+
+    const body = {
+      page: 1,
+      page_size: 30,
+    };
+    if (query) body.query = query;
+    if (jobType) body.job_type = jobType;
+    if (remote) body.is_remote = remote === "true";
+    if (location) body.location = location;
+    if (minSalary) body.min_salary = Number(minSalary);
+
+    try {
+      const jobs = await Api.post("/api/jobs/search", body);
+      renderResults(jobs);
+    } catch (err) {
+      resultsEl.innerHTML = `<div class="alert alert-error">Could not load jobs: ${escapeHtml(err.message)}</div>`;
+    }
+  }
+
+  function renderResults(jobs) {
+    if (!jobs.length) {
+      resultsEl.innerHTML = `<div class="empty-state"><h3>No jobs matched</h3><p>Try a broader search or clear a filter.</p></div>`;
+      return;
+    }
+
+    resultsEl.innerHTML = jobs.map(job => `
+      <a class="job-card" href="job-detail.html?id=${job.id}">
+        <div class="card-title-row">
+          <div>
+            <div class="job-title">${escapeHtml(job.title)}</div>
+            <div class="job-company">${escapeHtml(job.company_name || "")}</div>
+          </div>
+          ${job.similarity_score != null ? `<span class="match-badge">${Math.round(job.similarity_score * 100)}% match</span>` : ""}
+        </div>
+        <div class="job-meta">
+          <span>${escapeHtml(job.location || (job.is_remote ? "Remote" : "Location not specified"))}</span>
+          <span>${jobTypeLabel(job.job_type)}</span>
+          ${formatSalary(job.salary_min, job.salary_max, job.currency) ? `<span>${formatSalary(job.salary_min, job.salary_max, job.currency)}</span>` : ""}
+          <span class="pill pill-${job.status}">${job.status}</span>
+        </div>
+      </a>
+    `).join("");
+  }
+
+  document.getElementById("search-btn").addEventListener("click", runSearch);
+  document.getElementById("search-input").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") runSearch();
+  });
+  ["filter-type", "filter-remote", "filter-location", "filter-salary"].forEach(id => {
+    document.getElementById(id).addEventListener("change", runSearch);
+  });
+
+  runSearch();
+</script>
+</body>
+</html>

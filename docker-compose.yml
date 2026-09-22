@@ -1,0 +1,66 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: jobsearch_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: jobsearch
+    ports:
+      - "5432:5432"
+    volumes:
+      - jobsearch_db_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    container_name: jobsearch_backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@db:5432/jobsearch
+      SECRET_KEY: change-me-in-production
+      ACCESS_TOKEN_EXPIRE_MINUTES: "1440"
+      EMBEDDING_MODEL_NAME: all-MiniLM-L6-v2
+      CORS_ORIGINS: '["http://localhost:8080"]'
+      FRONTEND_BASE_URL: "http://localhost:8080"
+      # Leave SMTP_HOST empty to log password-reset emails to the backend
+      # console instead of sending them — fine for local development. Fill
+      # these in (and set SMTP_HOST) to send real email; see README.
+      SMTP_HOST: ""
+      SMTP_PORT: "587"
+      SMTP_USERNAME: ""
+      SMTP_PASSWORD: ""
+      EMAIL_FROM: "no-reply@aijobline.local"
+      EMAIL_FROM_NAME: "AI Jobline"
+      # Leave OPENAI_API_KEY empty to use the built-in template cover-letter
+      # generator instead of a real LLM call — works with zero setup.
+      OPENAI_API_KEY: ""
+      OPENAI_MODEL: "gpt-4o-mini"
+    ports:
+      - "8000:8000"
+    volumes:
+      - jobsearch_uploads:/app/uploads
+
+  frontend:
+    image: python:3.12-slim
+    container_name: jobsearch_frontend
+    restart: unless-stopped
+    working_dir: /site
+    volumes:
+      - ./frontend:/site:ro
+    ports:
+      - "8080:8080"
+    command: ["python3", "-m", "http.server", "8080"]
+
+volumes:
+  jobsearch_db_data:
+  jobsearch_uploads:
