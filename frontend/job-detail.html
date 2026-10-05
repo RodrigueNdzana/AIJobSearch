@@ -38,18 +38,23 @@
   function renderJob(job) {
     const salary = formatSalary(job.salary_min, job.salary_max, job.currency);
     contentEl.innerHTML = `
-      <span class="pill pill-${job.status}">${job.status}</span>
-      <h1 style="margin-top:12px;">${escapeHtml(job.title)}</h1>
-      <div class="job-meta" style="margin-bottom:20px;">
-        <span>${escapeHtml(job.location || (job.is_remote ? "Remote" : ""))}</span>
-        <span>${jobTypeLabel(job.job_type)}</span>
-        ${salary ? `<span>${salary}</span>` : ""}
-        ${job.experience_level ? `<span>${escapeHtml(job.experience_level)}</span>` : ""}
+      <div class="card ai-glow">
+        <div class="flex-between" style="margin-bottom:16px;">
+          <span class="pill pill-${job.status}">${job.status}</span>
+          ${job.similarity_score != null ? `<span class="match-badge">${Math.round(job.similarity_score * 100)}% match</span>` : ""}
+        </div>
+        <h1 style="margin-top:0;">${escapeHtml(job.title)}</h1>
+        <div class="job-meta" style="margin-bottom:24px;">
+          <span>${escapeHtml(job.location || (job.is_remote ? "Remote" : ""))}</span>
+          <span>${jobTypeLabel(job.job_type)}</span>
+          ${salary ? `<span>${salary}</span>` : ""}
+          ${job.experience_level ? `<span>${escapeHtml(job.experience_level)}</span>` : ""}
+        </div>
       </div>
 
       <div class="card">
         <h3>Description</h3>
-        <p style="white-space:pre-wrap;">${escapeHtml(job.description)}</p>
+        <p style="white-space:pre-wrap; color:var(--text-secondary);">${escapeHtml(job.description)}</p>
       </div>
 
       <div id="apply-section"></div>
@@ -75,12 +80,12 @@
     }
 
     el.innerHTML = `
-      <div class="card">
+      <div class="card ai-glow">
         <h3>Apply for this role</h3>
         <div id="apply-alert"></div>
         <div class="flex-between">
           <label for="cover-letter" style="margin:18px 0 6px;">Cover letter (optional)</label>
-          <button type="button" class="btn btn-secondary" id="draft-letter-btn" style="padding:4px 12px; font-size:0.82rem;">✨ Draft with AI</button>
+          <button type="button" class="btn btn-secondary" id="draft-letter-btn" style="padding:8px 16px; font-size:0.85rem;">✨ Draft with AI</button>
         </div>
         <textarea id="cover-letter" placeholder="A few sentences on why you're a fit…"></textarea>
         <button class="btn btn-primary" id="apply-btn" style="margin-top:16px;">Submit application</button>

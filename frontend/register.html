@@ -10,34 +10,36 @@
 <header id="site-header" class="site-header"></header>
 
 <main class="container-narrow">
-  <h1>Create your account</h1>
-  <p class="muted">Choose how you will use the platform.</p>
+  <div class="card ai-glow">
+    <h1>Create your account</h1>
+    <p class="muted">Choose how you will use the platform.</p>
 
-  <div id="alert-box"></div>
+    <div id="alert-box"></div>
 
-  <form id="register-form">
-    <label for="role">I am a</label>
-    <select id="role" required>
-      <option value="job_seeker">Job seeker - looking for work</option>
-      <option value="employer">Employer - hiring for my company</option>
-    </select>
+    <form id="register-form">
+      <label for="role">I am a</label>
+      <select id="role" required>
+        <option value="job_seeker">Job seeker - looking for work</option>
+        <option value="employer">Employer - hiring for my company</option>
+      </select>
 
-    <label id="name-label" for="full_name">Full name</label>
-    <input type="text" id="full_name" required>
+      <label id="name-label" for="full_name">Full name</label>
+      <input type="text" id="full_name" required placeholder="Jordan Lee">
 
-    <label for="email">Email</label>
-    <input type="email" id="email" required>
+      <label for="email">Email</label>
+      <input type="email" id="email" required placeholder="you@example.com">
 
-    <label for="password">Password</label>
-    <input type="password" id="password" required minlength="8">
-    <p class="field-hint">At least 8 characters.</p>
+      <label for="password">Password</label>
+      <input type="password" id="password" required minlength="8" placeholder="••••••••">
+      <p class="field-hint">At least 8 characters.</p>
 
-    <button type="submit" class="btn btn-primary btn-block" style="margin-top:24px;" id="submit-btn">Create account</button>
-  </form>
+      <button type="submit" class="btn btn-primary btn-block" id="submit-btn">Create account</button>
+    </form>
 
-  <p class="muted text-center" style="margin-top:20px;">
-    Already have an account? <a href="login.html">Log in</a>
-  </p>
+    <p class="muted text-center" style="margin-top:24px;">
+      Already have an account? <a href="login.html">Log in</a>
+    </p>
+  </div>
 </main>
 
 <script src="js/api.js"></script>

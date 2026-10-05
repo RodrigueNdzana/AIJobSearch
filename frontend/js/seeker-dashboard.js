@@ -101,7 +101,7 @@ async function loadProfile() {
   try {
     const profile = await Api.get("/api/job-seekers/me");
     el.innerHTML = `
-      <div class="card">
+      <div class="card ai-glow">
         <div id="profile-alert"></div>
         <form id="profile-form">
           <div class="field-row">
@@ -338,7 +338,7 @@ async function loadAssistant() {
   assistantLoaded = true;
 
   el.innerHTML = `
-    <div class="card">
+    <div class="card ai-glow">
       <p class="muted" style="margin-top:0;">
         Try: "Find me five suitable Java developer jobs.", "Which of these jobs am I most qualified for?",
         "What skills am I missing?", "Draft an application for the second job.", or
