@@ -141,7 +141,7 @@ async function openApplicantsModal(jobId, jobTitle) {
 function renderPostForm() {
   const el = sections.post;
   el.innerHTML = `
-    <div class="card">
+    <div class="card ai-glow">
       <div id="post-alert"></div>
       <form id="post-job-form">
         <label for="title">Job title</label>
@@ -228,7 +228,7 @@ async function loadCompanyProfile() {
   try {
     const company = await Api.get("/api/employers/me");
     el.innerHTML = `
-      <div class="card">
+      <div class="card ai-glow">
         <div id="company-alert"></div>
         <form id="company-form">
           <label for="company_name">Company name</label>

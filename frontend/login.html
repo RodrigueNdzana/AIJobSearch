@@ -10,25 +10,27 @@
 <header id="site-header" class="site-header"></header>
 
 <main class="container-narrow">
-  <h1>Log in</h1>
-  <p class="muted">Welcome back. Enter your details to continue.</p>
+  <div class="card ai-glow">
+    <h1>Welcome back</h1>
+    <p class="muted">Enter your details to continue to your dashboard.</p>
 
-  <div id="alert-box"></div>
+    <div id="alert-box"></div>
 
-  <form id="login-form">
-    <label for="email">Email</label>
-    <input type="email" id="email" required>
+    <form id="login-form">
+      <label for="email">Email</label>
+      <input type="email" id="email" required placeholder="you@example.com">
 
-    <label for="password">Password</label>
-    <input type="password" id="password" required>
-    <p class="field-hint" style="text-align:right; margin-top:6px;"><a href="forgot-password.html">Forgot password?</a></p>
+      <label for="password">Password</label>
+      <input type="password" id="password" required placeholder="••••••••">
+      <p class="field-hint" style="text-align:right; margin-top:6px;"><a href="forgot-password.html">Forgot password?</a></p>
 
-    <button type="submit" class="btn btn-primary btn-block" style="margin-top:12px;" id="submit-btn">Log in</button>
-  </form>
+      <button type="submit" class="btn btn-primary btn-block" id="submit-btn">Log in</button>
+    </form>
 
-  <p class="muted text-center" style="margin-top:20px;">
-    Don't have an account? <a href="register.html">Sign up</a>
-  </p>
+    <p class="muted text-center" style="margin-top:24px;">
+      Don't have an account? <a href="register.html">Sign up</a>
+    </p>
+  </div>
 </main>
 
 <script src="js/api.js"></script>
